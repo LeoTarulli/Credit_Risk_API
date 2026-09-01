@@ -5,8 +5,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 app = FastAPI(
-    title="API - German Credit Risk Assessment",
-    description="Predicción interactiva de riesgo crediticio basada en el dataset German Credit",
+    title="API - Credit Risk Test",
+    description="Credit Risk Test Assesment.",
     version="1.0.0",
 )
 

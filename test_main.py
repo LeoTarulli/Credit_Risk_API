@@ -7,7 +7,7 @@ client = TestClient(app)
 # Test 1: Verify API documentation endpoint responds with HTTP 200 OK
 def test_docs_status():
     response = client.get("/docs")
-    assert response.status_code == 500
+    assert response.status_code == 200
 
 # Test 2: Send a complete and valid payload; expect HTTP 200 and boolean inference
 def test_predict_valid_payload():

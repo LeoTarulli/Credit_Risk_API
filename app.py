@@ -27,8 +27,8 @@ with col1:
     
     installment_commitment = st.slider("Installment rate (% of income)", 1, 4, 2)
 
-    checking_status = st.selectbox( "Current Account Status", 
-                                   ["no checking", "<0", "0<=X<200", ">=200"],)
+    checking_status = st.selectbox( "Money had in your current account: ", 
+                                   ["no answer", "on debt", "less than 200", "more than 200"],)
     
     savings_status = st.selectbox("Saving Account Status",
                                    ["<100", "no known savings", "100<=X<500", "500<=X<1000", ">=1000"],

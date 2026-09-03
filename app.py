@@ -21,18 +21,47 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Financials and loans")
-    duration = st.slider("Duration of the loan (Months)", 1, 72, 24)
+    duration = st.slider("Duration of the loan (Months)", 1, 36, 12)
 
     credit_amount = st.number_input("Total requested (€)", min_value=100.0, value=2500.0, step=100.0)
     
-    installment_commitment = st.slider("Installment rate (% of income)", 1, 4, 2)
+    installment_commitment = st.slider("Monthly installment burden (% of disposable income)", 
+                                    min_value=1,
+                                    max_value= 4,
+                                    value=2,
+                                    help="1 = Lowest share of income (<25%)\n\n 4 = Heavy share of income (>35%)")
 
-    checking_status = st.selectbox( "Current Account Status", 
-                                   ["no checking", "<0", "0<=X<200", ">=200"],)
-    
-    savings_status = st.selectbox("Saving Account Status",
-                                   ["<100", "no known savings", "100<=X<500", "500<=X<1000", ">=1000"],
-    )
+    # Mapping checking status
+    checking_status_mapping = {
+            "No checking account": "no checking",
+            "Overdrawn / In debt (<0)":"<0",
+            "Less than 200€": "0<=x<200",
+            "200€ or more": ">=200"
+    }
+
+    # Showing labels 
+    selected_checking_label = st.selectbox( "Money in current account", options=list(checking_status_mapping.keys()))
+
+    # Obtaining the value to send to the API
+    checking_status = checking_status_mapping[selected_checking_label]
+
+
+    # Mapping saving account
+    saving_account_mapping = {
+            "No savings": "no known savings",
+            "Less than 100€":"<100",
+            "Between 500€ and 1000€": "500<=X<1000",
+            "More than 1000": ">=1000"
+    }
+
+    # Showing labels
+    selected_savings_status = st.selectbox("Money in your saving accounts", options=list(saving_account_mapping.keys()))
+
+    # Obtaining the value to send to the API
+    savings_status = saving_account_mapping[selected_savings_status]
+
+
+
     credit_history = st.selectbox(
         "Credit History",
         [
@@ -65,15 +94,29 @@ with col1:
 with col2:
     st.subheader("Personal details")
     age = st.number_input(
-        "Age:", min_value=18, max_value=100, value=35
-    )
+        "Age:", min_value=18, max_value=100, value=35)
+    
     personal_status = st.selectbox(
         "marital status: ",
-        ["male single", "female div/dep/mar", "male mar/wid", "male div/sep"],
-    )
-    employment = st.selectbox(
-        "Employment: ", ["1<=X<4", ">=7", "4<=X<7", "<1", "unemployed"]
-    )
+        ["male single", "female div/dep/mar", "male mar/wid", "male div/sep"],)
+
+    # Mapping employment
+
+    employment_mapping = {
+        "Unemployed":"unemployed",
+        "Less than a year":"<1",
+        "Between 1 and 4 years":"1<=X<4",
+        "Between 4 and 7 years": "4<=X<7",
+        "More than 7 years": ">=7"
+    }
+
+    # YOE stands for years of employment
+    selected_YOE = st.selectbox(
+        "How many years of employment do you currently have?",
+        options=list(employment_mapping.keys()))
+
+    employment = employment_mapping[selected_YOE]
+    
     job = st.selectbox(
         "Job type: ",
         ["skilled", "unskilled", "highqualif / selfemp", "unemp/unsk/ nonres"],

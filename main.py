@@ -1,8 +1,22 @@
 from enum import Enum
-import joblib
-import pandas as pd
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+from datetime import datetime
+from dotenv import load_dotenv
+from pymongo import MongoClient
+import os
+import joblib
+import pandas as pd
+
+load_dotenv()
+
+
+# Building conexion 
+MONGO_URI = os.getenv("MONGO_URI")
+mongo_client = MongoClient(MONGO_URI)
+db = mongo_client["credit_risk_db"]
+prediction_col = db["predictions"]
 
 app = FastAPI(
     title="API - Credit Risk Test",
@@ -187,6 +201,25 @@ def predict(customer: CustomerData):
 
         status_label = "Good (Low risk)" if pred == 0 else "Bad (High risk)"
         approve_loan = bool(pred == 0)
+
+        # 5. MongoDB
+
+        record = {
+            "timestamp": datetime.utcnow(),
+            "customer_input":customer.model_dump(),
+            "prediction":pred,
+            "status":status_label,
+            "loan_approved":approve_loan,
+            "probabilities":{
+                "good_credit":round(good_prob,4),
+                "bad_credit":round(bad_prob,4)
+            }
+        }
+
+        try:
+            prediction_col.insert_one(record)
+        except Exception as mongo_err:
+            print(f"[MongoDB Warning] It was not possible to save record: {mongo_err}")
 
         return {
             "prediction": pred,

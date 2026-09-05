@@ -6,3 +6,5 @@ pandas
 joblib
 streamlit
 requests
+python-dotenv
+dnspython
